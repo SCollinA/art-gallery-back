@@ -7,7 +7,7 @@ const { sequelize, Sequelize } = require('./Sequelize')
 const typeDefs = gql`
     input ArtworkInput {
         id: ID
-        gallery: GalleryInput
+        galleryId: ID
         title: String 
         width: Int
         height: Int
@@ -20,7 +20,7 @@ const typeDefs = gql`
     input GalleryInput {
         id: ID
         name: String
-        artworks: [ArtworkInput]
+        artworkIds: [ID]
     }
 
     type Query {
