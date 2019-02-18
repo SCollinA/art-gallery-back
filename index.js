@@ -1,4 +1,6 @@
 const { ApolloServer, gql } = require('apollo-server');
+const Sequelize = require('sequelize')
+const sequelize = new Sequelize('postgres:///apollo-server')
 
 // The GraphQL schema
 const typeDefs = gql`
