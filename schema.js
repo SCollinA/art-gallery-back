@@ -112,6 +112,8 @@ const resolvers = {
             return Artwork.destroy({ where: { id: args.id } })
         }, 
         login: (obj, args, context, info) => {
+            const pwMatch = bcrypt.compare(args.password, process.env.ADMIN_PW)
+            console.log('good password')
             return true
         }
     }
