@@ -5,65 +5,64 @@ const { sequelize, Sequelize } = require('./Sequelize')
 
 // The GraphQL schema
 const typeDefs = gql`
-  type Query {
-      "get a collection of artworks"
-      getGallery: Gallery!
-      "get a single artwork"
-      getArtwork: Artwork!
-  }
-
-type Mutation {
-    addGallery(name: String): Gallery!
-    updateGallery: Gallery!
-    deleteGallery: Boolean
-    addArtwork(
-        galleryId: ID!, 
-        title: String, 
-        width: Int, 
-        height: Int, 
-        medium: String, 
-        image: String, 
+    input ArtworkInput {
+        gallery: GalleryInput
+        title: String 
+        width: Int
+        height: Int
+        medium: String
+        image: String
         sold: Boolean
-    ): Artwork!
-    updateArtwork(
-        galleryId: ID!, 
-        title: String, 
-        width: Int, 
-        height: Int, 
-        medium: String, 
-        image: String, 
+    }
+    
+    input GalleryInput {
+        name: String
+        artworks: [ArtworkInput]
+    }
+
+    type Query {
+        "get a collection of artworks"
+        getGallery(id: ID!): Gallery!
+        "get a single artwork"
+        getArtwork(id: ID!): Artwork!
+    }
+
+    type Mutation {
+        addGallery(input: GalleryInput): Gallery!
+        updateGallery(id: ID!, input: GalleryInput): Gallery!
+        deleteGallery(id: ID!): Boolean
+        addArtwork(input: ArtworkInput): Artwork!
+        updateArtwork(id: ID!, input: ArtworkInput): Artwork!
+        deleteArtwork(id: ID!): Boolean
+    }
+
+    type Gallery {
+        id: ID!
+        name: String
+        artworks: [Artwork]
+    }
+
+    type Artwork {
+        id: ID!
+        gallery: Gallery
+        title: String 
+        width: Int
+        height: Int
+        medium: String
+        image: String
         sold: Boolean
-    ): Artwork!
-    deleteArtwork(id: ID!): Boolean
-}
-
-  type Gallery {
-      id: ID!
-      name: String
-      artworks: [Artwork]
-  }
-
-  type Artwork {
-      id: ID!
-      gallery: Gallery
-      title: String 
-      width: Int
-      height: Int
-      medium: String
-      image: String
-      sold: Boolean
-  }
+    }
 `
 
 // A map of functions which return data for the schema.
 const resolvers = {
     // get
     Query: {
-        getGallery: async () => {
-            return Gallery.findOne({ where: { name: 'gallery' } })
+        getGallery: async (obj, args, context, info) => {
+            return Gallery.findOne({ where: { id: args.id } })
         },
-        getArtwork: async () => {
-            return Artwork.findOne({ where: { name: 'artwork' } })
+        getArtwork: async (obj, args, context, info) => {
+            return Artwork.findOne({ where: { id: args.id } })
         }
     },
     // set
