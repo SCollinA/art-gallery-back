@@ -33,23 +33,22 @@ const typeDefs = gql`
     }
 
     type Mutation {
-        addGallery(input: GalleryInput): Gallery!
-        updateGallery(id: ID!, input: GalleryInput): Gallery!
+        addGallery(input: GalleryInput!): Gallery!
+        updateGallery(id: ID!, input: GalleryInput!): Gallery!
         deleteGallery(id: ID!): Boolean
-        addArtwork(input: ArtworkInput): Artwork!
-        updateArtwork(id: ID!, input: ArtworkInput): Artwork!
+        addArtwork(input: ArtworkInput!): Artwork!
+        updateArtwork(id: ID!, input: ArtworkInput!): Artwork!
         deleteArtwork(id: ID!): Boolean
     }
 
     type Gallery {
         id: ID!
         name: String
-        artworks: [Artwork]
     }
 
     type Artwork {
         id: ID!
-        gallery: Gallery
+        galleryId: ID
         title: String 
         width: Int
         height: Int
@@ -83,17 +82,22 @@ const resolvers = {
             return Gallery.create({...args.input})
         },
         updateGallery: (obj, args, context, info) => {
-            return Gallery.update({...args.input}, { where: { id: args.id } })
+            return Gallery.update({...args.input}, { 
+                where: { id: args.id },
+            })
+            .then(() => Gallery.findById(args.id))
         },
         deleteGallery: (obj, args, context, info) => {
             return Gallery.destroy({ where: { id: args.id } })
         },
         addArtwork: (obj, args, context, info) => {
-            console.log(args)
             return Artwork.create({...args.input})
         },
         updateArtwork: (obj, args, context, info) => {
-            return Artwork.update({...args.input}, { where: { id: args.id } })
+            return Artwork.update({...args.input}, { 
+                where: { id: args.id },
+            })
+            .then(() => Artwork.findById(args.id))
         },
         deleteArtwork: (obj, args, context, info) => {
             return Artwork.destroy({ where: { id: args.id } })

@@ -9,7 +9,7 @@ const Artwork = sequelize.define('artwork', {
         type: Sequelize.INTEGER
     },
     height: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
     },
     medium: {
         type: Sequelize.STRING
