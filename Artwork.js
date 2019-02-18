@@ -2,10 +2,6 @@ const { sequelize, Sequelize } = require('./Sequelize')
 const Gallery = require('./Gallery')
 
 const Artwork = sequelize.define('artwork', {
-    id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-    },
     title: {
         type: Sequelize.STRING
     },

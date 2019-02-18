@@ -6,6 +6,7 @@ const { sequelize, Sequelize } = require('./Sequelize')
 // The GraphQL schema
 const typeDefs = gql`
     input ArtworkInput {
+        id: ID
         gallery: GalleryInput
         title: String 
         width: Int
@@ -16,6 +17,7 @@ const typeDefs = gql`
     }
     
     input GalleryInput {
+        id: ID
         name: String
         artworks: [ArtworkInput]
     }
@@ -61,20 +63,32 @@ const resolvers = {
         getGallery: async (obj, args, context, info) => {
             return Gallery.findOne({ where: { id: args.id } })
         },
+        // getAllGalleries: 
         getArtwork: async (obj, args, context, info) => {
             return Artwork.findOne({ where: { id: args.id } })
         }
     },
     // set
     Mutation: {
-        addGallery: async () => {
-            return Gallery.create({name:'gallery'})
+        addGallery: async (obj, args, context, info) => {
+            return Gallery.create({...args.input})
         },
-        updateGallery: () => 'update gallery',
-        deleteGallery: () => 'delete gallery',
-        addArtwork: () => 'add artwork',
-        updateArtwork: () => 'update artwork',
-        deleteArtwork: () => 'delete artwork',
+        updateGallery: (obj, args, context, info) => {
+            return Gallery.update({...args.input}, { where: { id: args.id } })
+        },
+        deleteGallery: (obj, args, context, info) => {
+            return Gallery.destroy({ where: { id: args.id } })
+        },
+        addArtwork: async (obj, args, context, info) => {
+            console.log(args)
+            return Artwork.create({...args.input})
+        },
+        updateArtwork: (obj, args, context, info) => {
+            return Artwork.update({...args.input}, { where: { id: args.id } })
+        },
+        deleteArtwork: (obj, args, context, info) => {
+            return Artwork.destroy({ where: { id: args.id } })
+        },
     }
     // subscribe
 }
