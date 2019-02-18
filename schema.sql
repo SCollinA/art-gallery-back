@@ -1,11 +1,11 @@
-create table gallery (
+create table galleries (
     id serial primary key,
     name varchar(100)
 );
 
 create table artworks (
     id serial primary key,
-    gallery_id integer references gallery (id),
+    galleryId integer references gallery (id) on delete cascade,
     title varchar(100),
     width integer,
     height integer,

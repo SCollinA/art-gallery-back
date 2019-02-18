@@ -1,41 +1,59 @@
 const { ApolloServer, gql } = require('apollo-server');
-const Sequelize = require('sequelize')
-const sequelize = new Sequelize('postgres:///apollo-server')
+const Artwork = require('./Artwork')
+const Gallery = require('./Gallery')
+const { sequelize, Sequelize } = require('./Sequelize')
 
 // The GraphQL schema
 const typeDefs = gql`
-    type Query {
-        "A simple type for getting started!"
-        hello: String
-    }
+  type Query {
+      "get a collection of artworks"
+      getGallery: Gallery!
+      "get a single artwork"
+      getArtwork: Artwork!
+  }
 
-    type Mutation {
-        "update artwork"
-        updateArtwork: String
-    }
-
-    type Gallery {
-        artworks: [Artwork!]!
-    }
-
-    type Artwork {
-        id: ID
-        title: String
-        dimensions: {
-            width: Int
-            height: Int
-        }
-        medium: String
-        image: 
+type Mutation {
+    addGallery(name: String): Gallery!
+    updateGallery: Gallery!
+    deleteGallery: Boolean
+    addArtwork(
+        galleryId: Int, 
+        title: String, 
+        width: Int, 
+        height: Int, 
+        medium: String, 
+        image: String, 
         sold: Boolean
-    }
+    ): Artwork!
+    updateArtwork: Artwork!
+    deleteArtwork: Boolean
+}
+
+  type Gallery {
+      id: ID!
+      name: String
+      artworks: [Artwork]
+  }
+
+  type Artwork {
+      id: ID!
+      galleryId: ID!
+      title: String 
+      width: Int
+      height: Int
+      medium: String
+      image: String
+      sold: Boolean
+  }
 `
 
 // A map of functions which return data for the schema.
 const resolvers = {
     // get
     Query: {
-        hello: () => 'world'
+        getGallery: async () => {
+            return Gallery.findOne({ where: { name: 'John' }})
+        }
     },
     // set
     Mutation: {
