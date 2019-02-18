@@ -17,7 +17,7 @@ type Mutation {
     updateGallery: Gallery!
     deleteGallery: Boolean
     addArtwork(
-        galleryId: Int, 
+        galleryId: ID!, 
         title: String, 
         width: Int, 
         height: Int, 
@@ -25,8 +25,16 @@ type Mutation {
         image: String, 
         sold: Boolean
     ): Artwork!
-    updateArtwork: Artwork!
-    deleteArtwork: Boolean
+    updateArtwork(
+        galleryId: ID!, 
+        title: String, 
+        width: Int, 
+        height: Int, 
+        medium: String, 
+        image: String, 
+        sold: Boolean
+    ): Artwork!
+    deleteArtwork(id: ID!): Boolean
 }
 
   type Gallery {
@@ -37,7 +45,7 @@ type Mutation {
 
   type Artwork {
       id: ID!
-      galleryId: ID!
+      gallery: Gallery
       title: String 
       width: Int
       height: Int
@@ -52,12 +60,22 @@ const resolvers = {
     // get
     Query: {
         getGallery: async () => {
-            return Gallery.findOne({ where: { name: 'John' }})
+            return Gallery.findOne({ where: { name: 'gallery' } })
+        },
+        getArtwork: async () => {
+            return Artwork.findOne({ where: { name: 'artwork' } })
         }
     },
     // set
     Mutation: {
-        updateArtwork: () => 'update artwork'
+        addGallery: async () => {
+            return Gallery.create({name:'gallery'})
+        },
+        updateGallery: () => 'update gallery',
+        deleteGallery: () => 'delete gallery',
+        addArtwork: () => 'add artwork',
+        updateArtwork: () => 'update artwork',
+        deleteArtwork: () => 'delete artwork',
     }
     // subscribe
 }
