@@ -25,8 +25,10 @@ const typeDefs = gql`
     type Query {
         "get a collection of artworks"
         getGallery(id: ID!): Gallery!
+        getAllGalleries: [Gallery]
         "get a single artwork"
         getArtwork(id: ID!): Artwork!
+        getAllArtworks: [Artwork]
     }
 
     type Mutation {
@@ -63,9 +65,14 @@ const resolvers = {
         getGallery: (obj, args, context, info) => {
             return Gallery.findOne({ where: { id: args.id } })
         },
-        // getAllGalleries: 
+        getAllGalleries: (obj, args, context, info) => {
+            return Gallery.findAll()
+        },
         getArtwork: (obj, args, context, info) => {
             return Artwork.findOne({ where: { id: args.id } })
+        },
+        getAllArtworks: (obj, args, context, info) => {
+            return Artwork.findAll()
         }
     },
     // set
