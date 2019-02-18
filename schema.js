@@ -1,4 +1,6 @@
-const { gql } = require('apollo-server-express')
+const { gql } = require('apollo-server')
+const Artwork = require('./Artwork')
+const Gallery = require('./Gallery')
 
 // The GraphQL schema
 const typeDefs = gql`

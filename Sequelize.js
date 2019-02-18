@@ -1,5 +1,7 @@
 const Sequelize = require('sequelize')
-const sequelize = new Sequelize('postgres:///apollo-server')
+const sequelize = new Sequelize('postgres:///apollo-server', {
+  operatorsAliases: Sequelize.Op
+})
 
 sequelize
 .authenticate()
