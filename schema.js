@@ -1,6 +1,9 @@
 const { gql } = require('apollo-server')
 const Artwork = require('./Artwork')
 const Gallery = require('./Gallery')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 
 // The GraphQL schema
 const typeDefs = gql`
@@ -30,7 +33,7 @@ const typeDefs = gql`
         getArtwork(id: ID!): Artwork!
         getAllArtworks: [Artwork]
     }
-
+    
     type Mutation {
         addGallery(input: GalleryInput!): Gallery!
         updateGallery(id: ID!, input: GalleryInput!): Gallery!
@@ -38,6 +41,13 @@ const typeDefs = gql`
         addArtwork(input: ArtworkInput!): Artwork!
         updateArtwork(id: ID!, input: ArtworkInput!): Artwork!
         deleteArtwork(id: ID!): Boolean
+
+        "admin login"
+        login(password: String): AuthPayload
+    }
+
+    type AuthPayload {
+        token: String
     }
 
     type Gallery {
@@ -101,6 +111,9 @@ const resolvers = {
         deleteArtwork: (obj, args, context, info) => {
             return Artwork.destroy({ where: { id: args.id } })
         }, 
+        login: (obj, args, context, info) => {
+            return true
+        }
     }
     // subscribe
 }
