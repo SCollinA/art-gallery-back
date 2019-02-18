@@ -1,12 +1,24 @@
 {
-  "name": "apollo-server",
+  "name": "apollo-server-demo",
   "version": "1.0.0",
-  "description": "",
+  "description": "practice using the apollo server with sequelize to graphql pgsql",
+  "repository": {
+    "url": "https://github.com/SCollinA/apollo-server"
+  },
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "^2.4.2",
+    "graphql": "^14.1.1",
+    "sequelize": "^4.42.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  }
 }
