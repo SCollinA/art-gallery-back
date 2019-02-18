@@ -60,17 +60,17 @@ const typeDefs = gql`
 const resolvers = {
     // get
     Query: {
-        getGallery: async (obj, args, context, info) => {
+        getGallery: (obj, args, context, info) => {
             return Gallery.findOne({ where: { id: args.id } })
         },
         // getAllGalleries: 
-        getArtwork: async (obj, args, context, info) => {
+        getArtwork: (obj, args, context, info) => {
             return Artwork.findOne({ where: { id: args.id } })
         }
     },
     // set
     Mutation: {
-        addGallery: async (obj, args, context, info) => {
+        addGallery: (obj, args, context, info) => {
             return Gallery.create({...args.input})
         },
         updateGallery: (obj, args, context, info) => {
@@ -79,7 +79,7 @@ const resolvers = {
         deleteGallery: (obj, args, context, info) => {
             return Gallery.destroy({ where: { id: args.id } })
         },
-        addArtwork: async (obj, args, context, info) => {
+        addArtwork: (obj, args, context, info) => {
             console.log(args)
             return Artwork.create({...args.input})
         },
@@ -88,7 +88,7 @@ const resolvers = {
         },
         deleteArtwork: (obj, args, context, info) => {
             return Artwork.destroy({ where: { id: args.id } })
-        },
+        }, 
     }
     // subscribe
 }
