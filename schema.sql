@@ -8,5 +8,6 @@ create table artworks (
     height integer,
     medium varchar(200),
     image bytea,
+    price float,
     sold boolean
 );

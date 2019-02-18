@@ -17,6 +17,9 @@ const Artwork = sequelize.define('artwork', {
     image: {
         type: Sequelize.STRING
     },
+    price: {
+        type: Sequelize.FLOAT
+    },
     sold: {
         type: Sequelize.BOOLEAN
     }
