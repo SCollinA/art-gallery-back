@@ -23,6 +23,8 @@ const Artwork = sequelize.define('artwork', {
     sold: {
         type: Sequelize.BOOLEAN
     }
+}, {
+    timestamps: false
 })
 
 // insert gallery foreign key attribute here

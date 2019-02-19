@@ -5,6 +5,8 @@ const Gallery = sequelize.define('gallery', {
     name: {
         type: Sequelize.STRING
     }
+}, {
+    timestamps: false
 })
   
 module.exports = Gallery
