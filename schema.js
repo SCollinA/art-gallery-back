@@ -135,8 +135,7 @@ const resolvers = {
             jwtClient.authorize((error, tokens) => {
                 if (error) {
                     console.log('could not authorize', error)
-                    res.json({success: false, error: error})
-                    return
+                    return false
                 }
                 console.log('Successfully got access token! token: ', tokens)
                 const transporter = nodemailer.createTransport({
@@ -158,8 +157,10 @@ const resolvers = {
                     subject: 'art gallery contact',
                     text: `${name}. ${message}. ${artwork}` 
                 }, (error, info) => {
-                    if (error) { res.json({success: false, error, info})
-                    } else { res.json({success: true, info}) }
+                    console.log(error, info)
+                    if (error) {
+                        return false
+                    } else { return true }
                 })
             })
         }
