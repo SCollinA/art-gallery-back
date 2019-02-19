@@ -1,5 +1,5 @@
 {
-  "name": "apollo-server-demo",
+  "name": "art-gallery",
   "version": "1.0.0",
   "description": "practice using the apollo server with sequelize to graphql pgsql",
   "repository": {
@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
-    "reset-db": "dropdb apollo-server; createdb apollo-server; psql -f schema.sql apollo-server; psql -f seed.sql apollo-server;"
+    "reset-db": "dropdb art-gallery; createdb art-gallery; psql -f schema.sql art-gallery; psql -f seed.sql art-gallery;"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +20,7 @@
     "dotenv": "^6.2.0",
     "graphql": "^14.1.1",
     "jsonwebtoken": "^8.4.0",
-    "pg": "^7.8.0",
+    "pg": "^7.8.0", 
     "pg-hstore": "^2.3.2",
     "sequelize": "^4.42.0"
   },
