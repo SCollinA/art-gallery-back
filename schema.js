@@ -7,6 +7,7 @@ require('dotenv').config()
 const nodemailer = require('nodemailer')
 const { google } = require('googleapis')
 const serviceKey = require('./service_key.json')
+const fs = require('fs');
 
 // The GraphQL schema
 const typeDefs = gql`
@@ -109,12 +110,27 @@ const resolvers = {
         },
         updateArtwork: (obj, args, context, info) => {
             // check if image is less than 5 MB
-            const image = args.image && args.image.length < 5000000 && args.image
-            console.log(args.image)
+            const image = args.input.image.length < 5000000 && args.input.image
+            try {
+                image && 
+                    fs.writeFile(
+                        `../art-gallery-gatsby/src/images/artworks/${args.input.title}.jpeg`,
+                        image,
+                        {
+                            encoding: 'base64',
+                            flag: 'w+',
+                        }, 
+                        err => {
+                            if (err) { return console.log(err) }
+                            console.log("The artwork was saved!")
+                        }
+                    )
+            } catch (err) { console.log(err) }
             return Artwork.update({ ...args.input, image }, { 
                 where: { id: args.id },
             })
             .then(() => Artwork.findByPk(args.id))
+            .catch(console.log)
         },
         deleteArtwork: (obj, args, context, info) => {
             return Artwork.destroy({ where: { id: args.id } })

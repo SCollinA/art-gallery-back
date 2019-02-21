@@ -15,7 +15,8 @@ const Artwork = sequelize.define('artwork', {
         type: Sequelize.STRING
     },
     image: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING({ length: 5000000 }),
+        defaultValue: '',
     },
     price: {
         type: Sequelize.FLOAT
