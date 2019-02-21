@@ -4,6 +4,10 @@ const Gallery = require('./Gallery')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
+const nodemailer = require('nodemailer')
+const { google } = require('googleapis')
+const serviceKey = require('./service_key.json')
+const fs = require('fs');
 
 // The GraphQL schema
 const typeDefs = gql`
@@ -44,6 +48,8 @@ const typeDefs = gql`
 
         "admin login"
         login(password: String): AuthPayload
+
+        contactArtist(name: String, contactEmail: String, message: String, artwork: String): Boolean
     }
 
     type AuthPayload {
@@ -88,25 +94,43 @@ const resolvers = {
     // set
     Mutation: {
         addGallery: (obj, args, context, info) => {
-            return Gallery.create({...args.input})
+            return Gallery.create({ ...args.input })
         },
         updateGallery: (obj, args, context, info) => {
-            return Gallery.update({...args.input}, { 
+            return Gallery.update({ ...args.input }, { 
                 where: { id: args.id },
             })
-            .then(() => Gallery.findById(args.id))
+            .then(() => Gallery.findByPk(args.id))
         },
         deleteGallery: (obj, args, context, info) => {
             return Gallery.destroy({ where: { id: args.id } })
         },
         addArtwork: (obj, args, context, info) => {
-            return Artwork.create({...args.input})
+            return Artwork.create({ ...args.input })
         },
         updateArtwork: (obj, args, context, info) => {
-            return Artwork.update({...args.input}, { 
+            // check if image is less than 5 MB
+            const image = args.input.image.length < 5000000 && args.input.image
+            try {
+                image && 
+                    fs.writeFile(
+                        `../art-gallery-gatsby/src/images/artworks/${args.input.title}.jpeg`,
+                        image,
+                        {
+                            encoding: 'base64',
+                            flag: 'w+',
+                        }, 
+                        err => {
+                            if (err) { return console.log(err) }
+                            console.log("The artwork was saved!")
+                        }
+                    )
+            } catch (err) { console.log(err) }
+            return Artwork.update({ ...args.input, image }, { 
                 where: { id: args.id },
             })
-            .then(() => Artwork.findById(args.id))
+            .then(() => Artwork.findByPk(args.id))
+            .catch(console.log)
         },
         deleteArtwork: (obj, args, context, info) => {
             return Artwork.destroy({ where: { id: args.id } })
@@ -115,8 +139,51 @@ const resolvers = {
             const pwMatch = bcrypt.compare(args.password, process.env.ADMIN_PW)
             console.log('good password')
             return true
+        },
+        contactArtist: (obj, args, context, info) => {
+            const { name, contactEmail, message, artwork } = args
+            const email = 'hi@collinargo.com'
+            const jwtClient = new google.auth.JWT(
+                serviceKey.client_email,
+                null,
+                serviceKey.private_key,
+                ['https://mail.google.com/'],
+                null,
+                serviceKey.private_key_id
+            )
+            jwtClient.authorize((error, tokens) => {
+                if (error) {
+                    console.log('could not authorize', error)
+                    return false
+                }
+                console.log('Successfully got access token! token: ', tokens)
+                const transporter = nodemailer.createTransport({
+                    host: 'smtp.gmail.com',
+                    port: 465,
+                    secure: true,
+                    auth: {
+                        type: 'OAuth2',
+                        user: email,
+                        serviceClient: serviceKey.client_id,
+                        privateKey: serviceKey.private_key,
+                        accessToken: tokens.access_token,
+                        expires: tokens.expiry_date
+                    }
+                })
+                transporter.sendMail({
+                    from: 'An Example <' + contactEmail + '>', // this is being overwritten by gmail
+                    to: 'collin.argo@gmail.com',
+                    subject: 'art gallery contact',
+                    text: `${name}. ${message}. ${artwork}` 
+                }, (error, info) => {
+                    console.log(error, info)
+                    if (error) {
+                        return false
+                    } else { return true }
+                })
+            })
         }
-    }
+    },
     // subscribe
 }
 
