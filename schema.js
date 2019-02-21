@@ -19,7 +19,7 @@ const typeDefs = gql`
         height: Int
         medium: String
         image: String
-        price: Float
+        price: Int
         sold: Boolean
     }
     
@@ -71,7 +71,7 @@ const typeDefs = gql`
         height: Int
         medium: String
         image: String
-        price: Float
+        price: Int
         sold: Boolean
     }
 `

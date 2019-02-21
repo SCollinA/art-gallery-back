@@ -6,10 +6,12 @@ const Artwork = sequelize.define('artwork', {
         type: Sequelize.STRING
     },
     width: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
     },
     height: {
         type: Sequelize.INTEGER,
+        defaultValue: 0,
     },
     medium: {
         type: Sequelize.STRING
@@ -19,10 +21,12 @@ const Artwork = sequelize.define('artwork', {
         defaultValue: '',
     },
     price: {
-        type: Sequelize.FLOAT
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
     },
     sold: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
     }
 }, {
     timestamps: false
