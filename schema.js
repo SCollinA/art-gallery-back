@@ -109,7 +109,7 @@ const resolvers = {
         },
         updateArtwork: (obj, args, context, info) => {
             // check if image is less than 5 MB
-            const image = args.image.length < 5000000 && args.image
+            const image = args.image && args.image.length < 5000000 && args.image
             console.log(args.image)
             return Artwork.update({ ...args.input, image }, { 
                 where: { id: args.id },
