@@ -32,9 +32,11 @@ const typeDefs = gql`
     type Query {
         "get a collection of artworks"
         getGallery(id: ID!): Gallery!
-        getAllGalleries: [Gallery]
+        getGalleries(input: GalleryInput!): [Gallery]!
+        getAllGalleries: [Gallery]!
         "get a single artwork"
         getArtwork(id: ID!): Artwork!
+        getArtworks(input: ArtworkInput!): [Artwork]!
         getAllArtworks: [Artwork]
     }
     
@@ -81,11 +83,21 @@ const resolvers = {
         getGallery: (obj, args, context, info) => {
             return Gallery.findOne({ where: { id: args.id } })
         },
+        getGalleries: (obj, args, context, infor) => {
+            return Gallery.findAll({
+                where: args.input
+            })
+        },
         getAllGalleries: (obj, args, context, info) => {
             return Gallery.findAll()
         },
         getArtwork: (obj, args, context, info) => {
             return Artwork.findOne({ where: { id: args.id } })
+        },
+        getArtworks: (obj, args, context, info) => {
+            return Artwork.findAll({
+                where: args.input
+            })
         },
         getAllArtworks: (obj, args, context, info) => {
             return Artwork.findAll()
