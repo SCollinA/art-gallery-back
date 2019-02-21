@@ -93,25 +93,28 @@ const resolvers = {
     // set
     Mutation: {
         addGallery: (obj, args, context, info) => {
-            return Gallery.create({...args.input})
+            return Gallery.create({ ...args.input })
         },
         updateGallery: (obj, args, context, info) => {
-            return Gallery.update({...args.input}, { 
+            return Gallery.update({ ...args.input }, { 
                 where: { id: args.id },
             })
-            .then(() => Gallery.findById(args.id))
+            .then(() => Gallery.findByPk(args.id))
         },
         deleteGallery: (obj, args, context, info) => {
             return Gallery.destroy({ where: { id: args.id } })
         },
         addArtwork: (obj, args, context, info) => {
-            return Artwork.create({...args.input})
+            return Artwork.create({ ...args.input })
         },
         updateArtwork: (obj, args, context, info) => {
-            return Artwork.update({...args.input}, { 
+            // check if image is less than 5 MB
+            const image = args.image.length < 5000000 && args.image
+            console.log(args.image)
+            return Artwork.update({ ...args.input, image }, { 
                 where: { id: args.id },
             })
-            .then(() => Artwork.findById(args.id))
+            .then(() => Artwork.findByPk(args.id))
         },
         deleteArtwork: (obj, args, context, info) => {
             return Artwork.destroy({ where: { id: args.id } })
