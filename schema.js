@@ -114,7 +114,7 @@ const resolvers = {
             try {
                 image && 
                     fs.writeFile(
-                        `../art-gallery-gatsby/src/images/artworks/${args.input.title}.jpeg`,
+                        `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
                         image,
                         {
                             encoding: 'base64',
