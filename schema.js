@@ -132,10 +132,10 @@ const resolvers = {
                 args.input.image
             // args.input.image && 
             if (!image) {
-                fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.input.id}`,
+                fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
                 err => {
-                    if (err) { console.log('artwork image file not deleted') }
-                    console.log('artwork image file deleted')
+                    if (err) { console.log('artwork image file not deleted', err) }
+                    else { console.log('artwork image file deleted') }
                 })
             } else {
                 try {
@@ -179,6 +179,11 @@ const resolvers = {
         },
         deleteArtwork: (obj, args, context, info) => {
             require('./utils').checkLoggedIn(context)
+            fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.id}.jpeg`,
+            err => {
+                if (err) { console.log('artwork image file not deleted', err) }
+                else { console.log('artwork image file deleted') }
+            })
             return Artwork.destroy({ where: { id: args.id } })
         }, 
         login: (obj, args, context, info) => {
