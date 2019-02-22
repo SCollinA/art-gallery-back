@@ -49,7 +49,7 @@ const typeDefs = gql`
         deleteArtwork(id: ID!): Boolean
 
         "admin login"
-        login(password: String!): AuthPayload
+        login(password: String!): AuthPayload!
 
         contactArtist(name: String, contactEmail: String, message: String, artwork: String): Boolean
     }
@@ -168,11 +168,12 @@ const resolvers = {
             return Artwork.destroy({ where: { id: args.id } })
         }, 
         login: (obj, args, context, info) => {
-            const pwMatch = bcrypt.compare(args.password, process.env.ADMIN_PW)
-            if (!pwMatch) { return false }
+            const { APP_SECRET, ADMIN_PW } = process.env
+            const pwMatch = bcrypt.compare(args.password, ADMIN_PW)
+            if (!pwMatch) { return {} }
             console.log('good password')
-            
-            return true
+            const token = jwt.sign(ADMIN_PW, APP_SECRET)
+            return { token }
         },
         contactArtist: (obj, args, context, info) => {
             const { name, contactEmail, message, artwork } = args
