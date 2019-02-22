@@ -161,7 +161,10 @@ const resolvers = {
                                                     encoding: 'base64',
                                                     flag: 'w+',
                                                 },
-                                                err => console.log('could not write artwork image to file', err)
+                                                err => {
+                                                    if (err) { console.log('could not write artwork image to file', err) }
+                                                    else { console.log('artwork image written to file') }
+                                                }
                                             )
                                         }
                                     }
