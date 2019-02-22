@@ -126,11 +126,13 @@ const resolvers = {
             return Artwork.create({ ...args.input })
         },
         updateArtwork: (obj, args, context, info) => {
-            try { require('./utils').checkLoggedIn(context) }
-            catch (err) {
-                console.log(err, 'not logged in')
-                return Artwork.findByPk(args.id)
-            }
+            // try { 
+                require('./utils').checkLoggedIn(context) 
+            // }
+            // catch (err) {
+            //     console.log(err, 'not logged in')
+            //     return Artwork.findByPk(args.id)
+            // }
             // check if image is less than 5 MB
             const image = args.input.image && args.input.image.length < 5000000 ? 
             args.input.image : ''
@@ -196,7 +198,12 @@ const resolvers = {
         }, 
         login: (obj, args, context, info) => {
             const { APP_SECRET, ADMIN_PW } = process.env
-            const pwMatch = bcrypt.compare(args.password, ADMIN_PW)
+
+            const saltRounds = 10
+            const salt = bcrypt.genSaltSync(saltRounds)
+            const pwHash = bcrypt.hashSync(ADMIN_PW, salt)
+            const pwMatch = bcrypt.compareSync(args.password, pwHash)
+            
             if (!pwMatch) { throw new Error('bad password') }
             console.log('good password')
             const token = jwt.sign({ isLoggedIn: true }, APP_SECRET, {
