@@ -14,9 +14,10 @@ const Artwork = sequelize.define('artwork', {
         defaultValue: 0,
     },
     medium: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        defaultValue: '',
     },
-    image: {
+    image: { // images must be less than 5 MB
         type: Sequelize.STRING({ length: 5000000 }),
         defaultValue: '',
     },
@@ -36,7 +37,10 @@ const Artwork = sequelize.define('artwork', {
 Artwork.belongsTo(Gallery, {
     foreignKey: {
         allowNull: true
-    }
-})
+    },
+    onDelete: 'SET NULL',
+    constraints: true,
+}
+)
 
 module.exports = Artwork

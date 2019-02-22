@@ -126,19 +126,23 @@ const resolvers = {
             return Artwork.create({ ...args.input })
         },
         updateArtwork: (obj, args, context, info) => {
-            require('./utils').checkLoggedIn(context)
+            try { require('./utils').checkLoggedIn(context) }
+            catch (err) {
+                console.log(err, 'not logged in')
+                return Artwork.findByPk(args.id)
+            }
             // check if image is less than 5 MB
-            const image = args.input.image.length < 5000000 && 
-                args.input.image
+            const image = args.input.image && args.input.image.length < 5000000 ? 
+            args.input.image : ''
             // args.input.image && 
-            if (!image) {
-                fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
-                err => {
-                    if (err) { console.log('artwork image file not deleted', err) }
-                    else { console.log('artwork image file deleted') }
-                })
-            } else {
-                try {
+            try {
+                if (!image) {
+                    fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
+                    err => {
+                        if (err) { console.log('artwork image file not deleted', err) }
+                        else { console.log('artwork image file deleted') }
+                    })
+                } else {
                     // image && 
                     // write file always in order to overwrite reused artwork IDs
                     fs.writeFile(
@@ -172,10 +176,11 @@ const resolvers = {
                             } 
                         }
                     )
-                } catch (err) { console.log('could not write artwork image to file', err) }
-            }
+                }
+            } catch (err) { console.log('could not write artwork image to file', err) }
             return Artwork.update({ ...args.input, image }, { 
                 where: { id: args.id },
+                // returning: true
             })
             .then(() => Artwork.findByPk(args.id))
             .catch(err => console.log('could not update artwork', err))
@@ -194,7 +199,9 @@ const resolvers = {
             const pwMatch = bcrypt.compare(args.password, ADMIN_PW)
             if (!pwMatch) { throw new Error('bad password') }
             console.log('good password')
-            const token = jwt.sign({ isLoggedIn: true }, APP_SECRET)
+            const token = jwt.sign({ isLoggedIn: true }, APP_SECRET, {
+                expiresIn: 60 * 60 * 24 // expires in one day
+            })
             return { token }
         },
         contactArtist: (obj, args, context, info) => {
