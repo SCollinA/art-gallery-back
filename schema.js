@@ -9,7 +9,6 @@ const fs = require('fs')
 
 const Artwork = require('./Artwork')
 const Gallery = require('./Gallery')
-const { checkLoggedIn } = require('./utils')
 
 // The GraphQL schema
 const typeDefs = gql`
@@ -97,7 +96,6 @@ const resolvers = {
             return Artwork.findOne({ where: { id: args.id } })
         },
         getArtworks: (obj, args, context, info) => {
-            console.log(args.input)
             return Artwork.findAll({
                 where: args.input
             })
@@ -109,26 +107,26 @@ const resolvers = {
     // set
     Mutation: {
         addGallery: (obj, args, context, info) => {
-            const checkLoggedIn = checkLoggedIn(context)
+            require('./utils').checkLoggedIn(context)
             return Gallery.create({ ...args.input })
         },
         updateGallery: (obj, args, context, info) => {
-            const checkLoggedIn = checkLoggedIn(context)
+            require('./utils').checkLoggedIn(context)
             return Gallery.update({ ...args.input }, { 
                 where: { id: args.id },
             })
             .then(() => Gallery.findByPk(args.id))
         },
         deleteGallery: (obj, args, context, info) => {
-            const checkLoggedIn = checkLoggedIn(context)
+            require('./utils').checkLoggedIn(context)
             return Gallery.destroy({ where: { id: args.id } })
         },
         addArtwork: (obj, args, context, info) => {
-            const checkLoggedIn = checkLoggedIn(context)
+            require('./utils').checkLoggedIn(context)
             return Artwork.create({ ...args.input })
         },
         updateArtwork: (obj, args, context, info) => {
-            const checkLoggedIn = checkLoggedIn(context)
+            require('./utils').checkLoggedIn(context)
             // check if image is less than 5 MB
             const image = args.input.image.length < 5000000 && 
                 args.input.image
@@ -156,7 +154,7 @@ const resolvers = {
                                                 encoding: 'base64',
                                                 flag: 'w+',
                                             },
-                                            console.log
+                                            err => console.log(err)
                                         )
                                     }
                                 }
@@ -172,7 +170,7 @@ const resolvers = {
             .catch(console.log)
         },
         deleteArtwork: (obj, args, context, info) => {
-            const checkLoggedIn = checkLoggedIn(context)
+            require('./utils').checkLoggedIn(context)
             return Artwork.destroy({ where: { id: args.id } })
         }, 
         login: (obj, args, context, info) => {
