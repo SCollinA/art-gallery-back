@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize')
 const sequelize = new Sequelize('postgres:///art-gallery', {
   operatorsAliases: Sequelize.Op,
+  logging: false,
 })
 
 sequelize

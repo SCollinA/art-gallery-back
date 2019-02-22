@@ -1,13 +1,14 @@
 const { gql } = require('apollo-server')
-const Artwork = require('./Artwork')
-const Gallery = require('./Gallery')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const nodemailer = require('nodemailer')
 const { google } = require('googleapis')
 const serviceKey = require('./service_key.json')
-const fs = require('fs');
+const fs = require('fs')
+
+const Artwork = require('./Artwork')
+const Gallery = require('./Gallery')
 
 // The GraphQL schema
 const typeDefs = gql`
@@ -49,7 +50,7 @@ const typeDefs = gql`
         deleteArtwork(id: ID!): Boolean
 
         "admin login"
-        login(password: String): AuthPayload
+        login(password: String!): AuthPayload!
 
         contactArtist(name: String, contactEmail: String, message: String, artwork: String): Boolean
     }
@@ -106,22 +107,26 @@ const resolvers = {
     // set
     Mutation: {
         addGallery: (obj, args, context, info) => {
+            require('./utils').checkLoggedIn(context)
             return Gallery.create({ ...args.input })
         },
         updateGallery: (obj, args, context, info) => {
+            require('./utils').checkLoggedIn(context)
             return Gallery.update({ ...args.input }, { 
                 where: { id: args.id },
             })
             .then(() => Gallery.findByPk(args.id))
         },
         deleteGallery: (obj, args, context, info) => {
+            require('./utils').checkLoggedIn(context)
             return Gallery.destroy({ where: { id: args.id } })
         },
         addArtwork: (obj, args, context, info) => {
+            require('./utils').checkLoggedIn(context)
             return Artwork.create({ ...args.input })
         },
         updateArtwork: (obj, args, context, info) => {
-            console.log('herrrorooooror', args.input)
+            require('./utils').checkLoggedIn(context)
             // check if image is less than 5 MB
             const image = args.input.image.length < 5000000 && 
                 args.input.image
@@ -129,49 +134,52 @@ const resolvers = {
             try {
                 // image && 
                 // write file always in order to overwrite reused artwork IDs
-                    fs.writeFile(
-                        `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
-                        image,
-                        {
-                            encoding: 'base64',
-                            flag: 'w+',
-                        }, 
-                        err => {
-                            if (err) {
-                                fs.mkdir('../art-gallery-gatsby/src/images/artworks/',
-                                    err => {
-                                        if (err) { return console.log(err) }
-                                        else {
-                                            fs.writeFile(
-                                                `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
-                                                image,
-                                                {
-                                                    encoding: 'base64',
-                                                    flag: 'w+',
-                                                },
-                                                console.log
-                                            )
-                                        }
+                fs.writeFile(
+                    `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
+                    image,
+                    {
+                        encoding: 'base64',
+                        flag: 'w+',
+                    }, 
+                    err => {
+                        if (err) {
+                            fs.mkdir('../art-gallery-gatsby/src/images/artworks/',
+                                err => {
+                                    if (err) { return console.log('could not mkdir for artwork', err) }
+                                    else {
+                                        fs.writeFile(
+                                            `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
+                                            image,
+                                            {
+                                                encoding: 'base64',
+                                                flag: 'w+',
+                                            },
+                                            err => console.log('could not write artwork image to file', err)
+                                        )
                                     }
-                                )  
-                            }
-                            console.log("The artwork was saved!")
-                        }
-                    )
-            } catch (err) { console.log(err) }
+                                }
+                            )  
+                        } 
+                    }
+                )
+            } catch (err) { console.log('could not write artwork image to file', err) }
             return Artwork.update({ ...args.input, image }, { 
                 where: { id: args.id },
             })
             .then(() => Artwork.findByPk(args.id))
-            .catch(console.log)
+            .catch(err => console.log('could not update artwork', err))
         },
         deleteArtwork: (obj, args, context, info) => {
+            require('./utils').checkLoggedIn(context)
             return Artwork.destroy({ where: { id: args.id } })
         }, 
         login: (obj, args, context, info) => {
-            const pwMatch = bcrypt.compare(args.password, process.env.ADMIN_PW)
+            const { APP_SECRET, ADMIN_PW } = process.env
+            const pwMatch = bcrypt.compare(args.password, ADMIN_PW)
+            if (!pwMatch) { throw new Error('bad password') }
             console.log('good password')
-            return true
+            const token = jwt.sign({ isLoggedIn: true }, APP_SECRET)
+            return { token }
         },
         contactArtist: (obj, args, context, info) => {
             const { name, contactEmail, message, artwork } = args
@@ -209,8 +217,8 @@ const resolvers = {
                     subject: 'art gallery contact',
                     text: `${name}. ${message}. ${artwork}` 
                 }, (error, info) => {
-                    console.log(error, info)
                     if (error) {
+                        console.log('contact e-mail not sent!', error, info)
                         return false
                     } else { return true }
                 })
