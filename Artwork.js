@@ -33,6 +33,10 @@ const Artwork = sequelize.define('artwork', {
 })
 
 // insert gallery foreign key attribute here
-Artwork.belongsTo(Gallery)
+Artwork.belongsTo(Gallery, {
+    foreignKey: {
+        allowNull: true
+    }
+})
 
 module.exports = Artwork

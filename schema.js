@@ -31,13 +31,13 @@ const typeDefs = gql`
 
     type Query {
         "get a collection of artworks"
-        getGallery(id: ID!): Gallery!
+        getGallery(id: ID!): Gallery
         getGalleries(input: GalleryInput!): [Gallery]!
         getAllGalleries: [Gallery]!
         "get a single artwork"
         getArtwork(id: ID!): Artwork!
         getArtworks(input: ArtworkInput!): [Artwork]!
-        getAllArtworks: [Artwork]
+        getAllArtworks: [Artwork]!
     }
     
     type Mutation {
@@ -45,7 +45,7 @@ const typeDefs = gql`
         updateGallery(id: ID!, input: GalleryInput!): Gallery!
         deleteGallery(id: ID!): Boolean
         addArtwork(input: ArtworkInput!): Artwork!
-        updateArtwork(id: ID!, input: ArtworkInput!): Artwork!
+        updateArtwork(id: ID!, input: ArtworkInput): Artwork!
         deleteArtwork(id: ID!): Boolean
 
         "admin login"
@@ -65,8 +65,8 @@ const typeDefs = gql`
 
     type Artwork {
         id: ID!
-        galleryId: ID
-        title: String 
+        galleryId: ID 
+        title: String
         width: Int
         height: Int
         medium: String
@@ -121,10 +121,14 @@ const resolvers = {
             return Artwork.create({ ...args.input })
         },
         updateArtwork: (obj, args, context, info) => {
+            console.log('herrrorooooror', args.input)
             // check if image is less than 5 MB
-            const image = args.input.image.length < 5000000 && args.input.image
+            const image = args.input.image.length < 5000000 && 
+                args.input.image
+            // args.input.image && 
             try {
-                image && 
+                // image && 
+                // write file always in order to overwrite reused artwork IDs
                     fs.writeFile(
                         `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
                         image,
@@ -133,7 +137,24 @@ const resolvers = {
                             flag: 'w+',
                         }, 
                         err => {
-                            if (err) { return console.log(err) }
+                            if (err) {
+                                fs.mkdir('../art-gallery-gatsby/src/images/artworks/',
+                                    err => {
+                                        if (err) { return console.log(err) }
+                                        else {
+                                            fs.writeFile(
+                                                `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
+                                                image,
+                                                {
+                                                    encoding: 'base64',
+                                                    flag: 'w+',
+                                                },
+                                                console.log
+                                            )
+                                        }
+                                    }
+                                )  
+                            }
                             console.log("The artwork was saved!")
                         }
                     )
