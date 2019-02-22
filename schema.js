@@ -1,13 +1,15 @@
 const { gql } = require('apollo-server')
-const Artwork = require('./Artwork')
-const Gallery = require('./Gallery')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const nodemailer = require('nodemailer')
 const { google } = require('googleapis')
 const serviceKey = require('./service_key.json')
-const fs = require('fs');
+const fs = require('fs')
+
+const Artwork = require('./Artwork')
+const Gallery = require('./Gallery')
+const { checkLoggedIn } = require('./utils')
 
 // The GraphQL schema
 const typeDefs = gql`
@@ -107,21 +109,26 @@ const resolvers = {
     // set
     Mutation: {
         addGallery: (obj, args, context, info) => {
+            const checkLoggedIn = checkLoggedIn(context)
             return Gallery.create({ ...args.input })
         },
         updateGallery: (obj, args, context, info) => {
+            const checkLoggedIn = checkLoggedIn(context)
             return Gallery.update({ ...args.input }, { 
                 where: { id: args.id },
             })
             .then(() => Gallery.findByPk(args.id))
         },
         deleteGallery: (obj, args, context, info) => {
+            const checkLoggedIn = checkLoggedIn(context)
             return Gallery.destroy({ where: { id: args.id } })
         },
         addArtwork: (obj, args, context, info) => {
+            const checkLoggedIn = checkLoggedIn(context)
             return Artwork.create({ ...args.input })
         },
         updateArtwork: (obj, args, context, info) => {
+            const checkLoggedIn = checkLoggedIn(context)
             // check if image is less than 5 MB
             const image = args.input.image.length < 5000000 && 
                 args.input.image
@@ -165,14 +172,15 @@ const resolvers = {
             .catch(console.log)
         },
         deleteArtwork: (obj, args, context, info) => {
+            const checkLoggedIn = checkLoggedIn(context)
             return Artwork.destroy({ where: { id: args.id } })
         }, 
         login: (obj, args, context, info) => {
             const { APP_SECRET, ADMIN_PW } = process.env
             const pwMatch = bcrypt.compare(args.password, ADMIN_PW)
-            if (!pwMatch) { return {} }
+            if (!pwMatch) { throw new Error('bad password') }
             console.log('good password')
-            const token = jwt.sign(ADMIN_PW, APP_SECRET)
+            const token = jwt.sign({ isLoggedIn: true }, APP_SECRET)
             return { token }
         },
         contactArtist: (obj, args, context, info) => {
