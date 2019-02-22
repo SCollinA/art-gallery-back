@@ -145,7 +145,7 @@ const resolvers = {
                         if (err) {
                             fs.mkdir('../art-gallery-gatsby/src/images/artworks/',
                                 err => {
-                                    if (err) { return console.log(err) }
+                                    if (err) { return console.log('could not mkdir for artwork', err) }
                                     else {
                                         fs.writeFile(
                                             `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
@@ -154,20 +154,20 @@ const resolvers = {
                                                 encoding: 'base64',
                                                 flag: 'w+',
                                             },
-                                            err => console.log(err)
+                                            err => console.log('could not write artwork image to file', err)
                                         )
                                     }
                                 }
                             )  
-                        }
+                        } 
                     }
                 )
-            } catch (err) { console.log(err) }
+            } catch (err) { console.log('could not write artwork image to file', err) }
             return Artwork.update({ ...args.input, image }, { 
                 where: { id: args.id },
             })
             .then(() => Artwork.findByPk(args.id))
-            .catch(console.log)
+            .catch(err => console.log('could not update artwork', err))
         },
         deleteArtwork: (obj, args, context, info) => {
             require('./utils').checkLoggedIn(context)
@@ -217,8 +217,8 @@ const resolvers = {
                     subject: 'art gallery contact',
                     text: `${name}. ${message}. ${artwork}` 
                 }, (error, info) => {
-                    console.log(error, info)
                     if (error) {
+                        console.log('contact e-mail not sent!', error, info)
                         return false
                     } else { return true }
                 })
