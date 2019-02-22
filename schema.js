@@ -49,7 +49,7 @@ const typeDefs = gql`
         deleteArtwork(id: ID!): Boolean
 
         "admin login"
-        login(password: String): AuthPayload
+        login(password: String!): AuthPayload
 
         contactArtist(name: String, contactEmail: String, message: String, artwork: String): Boolean
     }
@@ -95,6 +95,7 @@ const resolvers = {
             return Artwork.findOne({ where: { id: args.id } })
         },
         getArtworks: (obj, args, context, info) => {
+            console.log(args.input)
             return Artwork.findAll({
                 where: args.input
             })
@@ -121,7 +122,6 @@ const resolvers = {
             return Artwork.create({ ...args.input })
         },
         updateArtwork: (obj, args, context, info) => {
-            console.log('herrrorooooror', args.input)
             // check if image is less than 5 MB
             const image = args.input.image.length < 5000000 && 
                 args.input.image
@@ -129,35 +129,34 @@ const resolvers = {
             try {
                 // image && 
                 // write file always in order to overwrite reused artwork IDs
-                    fs.writeFile(
-                        `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
-                        image,
-                        {
-                            encoding: 'base64',
-                            flag: 'w+',
-                        }, 
-                        err => {
-                            if (err) {
-                                fs.mkdir('../art-gallery-gatsby/src/images/artworks/',
-                                    err => {
-                                        if (err) { return console.log(err) }
-                                        else {
-                                            fs.writeFile(
-                                                `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
-                                                image,
-                                                {
-                                                    encoding: 'base64',
-                                                    flag: 'w+',
-                                                },
-                                                console.log
-                                            )
-                                        }
+                fs.writeFile(
+                    `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
+                    image,
+                    {
+                        encoding: 'base64',
+                        flag: 'w+',
+                    }, 
+                    err => {
+                        if (err) {
+                            fs.mkdir('../art-gallery-gatsby/src/images/artworks/',
+                                err => {
+                                    if (err) { return console.log(err) }
+                                    else {
+                                        fs.writeFile(
+                                            `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
+                                            image,
+                                            {
+                                                encoding: 'base64',
+                                                flag: 'w+',
+                                            },
+                                            console.log
+                                        )
                                     }
-                                )  
-                            }
-                            console.log("The artwork was saved!")
+                                }
+                            )  
                         }
-                    )
+                    }
+                )
             } catch (err) { console.log(err) }
             return Artwork.update({ ...args.input, image }, { 
                 where: { id: args.id },
@@ -170,7 +169,9 @@ const resolvers = {
         }, 
         login: (obj, args, context, info) => {
             const pwMatch = bcrypt.compare(args.password, process.env.ADMIN_PW)
+            if (!pwMatch) { return false }
             console.log('good password')
+            
             return true
         },
         contactArtist: (obj, args, context, info) => {
