@@ -6,11 +6,17 @@ const server = new ApolloServer({
     resolvers,
     context: ({ req }) => ({ authorization: req.get('Authorization') }),
     cors: {
-        origin: ['http://localhost:8000',
-                'http://localhost:1961',
-                'https://art-gallery.collinargo.com',
+        origin: ['http://localhost:8000', // dev client port
+                'http://localhost:1961', // production client port
+                'https://art-gallery.collinargo.com', // production client origin
         ],
     }
 })
 
-server.listen().then(({ url }) => console.log(`🚀 Server ready at ${url}`))
+server.listen({ 
+    port: 4000, 
+    path: '/graphql',
+    // hostname: 'https://art-gallery.collinargo.com/graphql' 
+    // hostname: 'http://localhost' 
+})
+.then(({ url }) => console.log(`🚀 Server ready at ${url}`))
