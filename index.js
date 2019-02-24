@@ -6,7 +6,10 @@ const server = new ApolloServer({
     resolvers,
     context: ({ req }) => ({ authorization: req.get('Authorization') }),
     cors: {
-        origin: 'http://localhost:8000',
+        origin: ['http://localhost:8000',
+                'http://localhost:1961',
+                'https://art-gallery.collinargo.com',
+        ],
     }
 })
 
