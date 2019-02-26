@@ -197,6 +197,7 @@ const resolvers = {
             return Artwork.destroy({ where: { id: args.id } })
         }, 
         login: (obj, args, context, info) => {
+            require('dotenv').config()
             const { APP_SECRET, ADMIN_PW } = process.env
             console.log('logging in', args, ADMIN_PW)
             const saltRounds = 10
