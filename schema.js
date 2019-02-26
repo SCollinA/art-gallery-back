@@ -198,7 +198,7 @@ const resolvers = {
         }, 
         login: (obj, args, context, info) => {
             const { APP_SECRET, ADMIN_PW } = process.env
-
+            console.log('logging in', args, ADMIN_PW)
             const saltRounds = 10
             const salt = bcrypt.genSaltSync(saltRounds)
             const pwHash = bcrypt.hashSync(ADMIN_PW, salt)
@@ -244,6 +244,7 @@ const resolvers = {
                 transporter.sendMail({
                     from: 'An Example <' + contactEmail + '>', // this is being overwritten by gmail
                     to: 'collin.argo@gmail.com',
+                    // to: 'mkcrfineart@gmail.com', // client business e-mail
                     subject: 'art gallery contact',
                     text: `${name}. ${message}. ${artwork}` 
                 }, (error, info) => {
