@@ -198,7 +198,6 @@ const resolvers = {
         }, 
         login: (obj, args, context, info) => {
             const { APP_SECRET, ADMIN_PW } = process.env
-            console.log('logging in', args, ADMIN_PW)
             const saltRounds = 10
             const salt = bcrypt.genSaltSync(saltRounds)
             const pwHash = bcrypt.hashSync(ADMIN_PW, salt)
