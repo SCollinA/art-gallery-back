@@ -7,14 +7,18 @@ const sequelize = new Sequelize('postgres:///art-gallery', {
   logging: false,
 })
 
+const isDev = true
+// const isDev = false
+
 sequelize
 .authenticate()
 .then(() => {
   console.log('Connection has been established successfully.')
   const imageDirectory = '../art-gallery-gatsby/src/images/artworks/'
   // sequelize.sync()
-  sequelize.sync({ force: true })
+  sequelize.sync({ force: isDev })
   .then(() => {
+    isDev &&
     fs.rmdir(imageDirectory,
     err => {
       if (err) { 
