@@ -247,10 +247,10 @@ const resolvers = {
                     subject: 'art gallery contact',
                     text: `
                         ${name}
-                        ${contactEmail}
-                        ${message} 
+                        ${message}
                         ${artwork}
-                    ` 
+                    `,
+                    replyTo: contactEmail 
                 }, (error, info) => {
                     if (error) {
                         console.log('contact e-mail not sent!', error, info)
