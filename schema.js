@@ -245,7 +245,12 @@ const resolvers = {
                     to: 'collin.argo@gmail.com',
                     // to: 'mkcrfineart@gmail.com', // client business e-mail
                     subject: 'art gallery contact',
-                    text: `${name}. ${message}. ${artwork}` 
+                    text: `
+                        ${name}
+                        ${contactEmail}
+                        ${message} 
+                        ${artwork}
+                    ` 
                 }, (error, info) => {
                     if (error) {
                         console.log('contact e-mail not sent!', error, info)
