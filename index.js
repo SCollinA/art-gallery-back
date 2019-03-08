@@ -7,6 +7,7 @@ const server = new ApolloServer({
     context: ({ req }) => ({ authorization: req.get('Authorization') }),
     cors: {
         origin: ['http://localhost:8000', // dev client port
+                'http://localhost:9000', // alternate dev client port
                 'http://localhost:1961', // production client port
                 'https://art-gallery.collinargo.com', // production client origin
                 'https://mkcrfineart.com', // production client origin
