@@ -139,7 +139,7 @@ const resolvers = {
             // args.input.image && 
             try {
                 if (!image) {
-                    fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.input.id}-${args.input.title}.jpeg`,
+                    fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
                     err => {
                         if (err) { console.log('artwork image file not deleted', err) }
                         else { console.log('artwork image file deleted') }
@@ -148,7 +148,7 @@ const resolvers = {
                     // image && 
                     // write file always in order to overwrite reused artwork IDs
                     fs.writeFile(
-                        `../art-gallery-gatsby/src/images/artworks/${args.input.id}-${args.input.title}.jpeg`,
+                        `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
                         image,
                         {
                             encoding: 'base64',
@@ -161,7 +161,7 @@ const resolvers = {
                                         if (err) { return console.log('could not mkdir for artwork', err) }
                                         else {
                                             fs.writeFile(
-                                                `../art-gallery-gatsby/src/images/artworks/${args.input.id}-${args.input.title}.jpeg`,
+                                                `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
                                                 image,
                                                 {
                                                     encoding: 'base64',
@@ -189,7 +189,7 @@ const resolvers = {
         },
         deleteArtwork: (obj, args, context, info) => {
             require('./utils').checkLoggedIn(context)
-            fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.id}-${args.title}.jpeg`,
+            fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.id}.jpeg`,
             err => {
                 if (err) { console.log('artwork image file not deleted', err) }
                 else { console.log('artwork image file deleted') }
