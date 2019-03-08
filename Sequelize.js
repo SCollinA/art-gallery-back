@@ -27,7 +27,7 @@ sequelize
           fs.readdir(imageDirectory,
           (err, files) => {
             if (files.length === 0 || err) { 
-              console.log('no images', err); 
+              console.log('no images', err);
               return 
             }
             files.forEach(file => {
