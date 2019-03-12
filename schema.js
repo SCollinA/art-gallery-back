@@ -138,7 +138,7 @@ const resolvers = {
             args.input.image : ''
             // args.input.image && 
             try {
-                if (!image) {
+                if (!image) { // user submitted artwork without image
                     fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
                     err => {
                         if (err) { console.log('artwork image file not deleted', err) }

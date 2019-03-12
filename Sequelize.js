@@ -2,13 +2,13 @@ const Sequelize = require('sequelize')
 const fs = require('fs')
 const path = require('path')
 
+const isDev = true
+// const isDev = false
+
 const sequelize = new Sequelize('postgres:///art-gallery', {
   operatorsAliases: Sequelize.Op,
   logging: false,
-})
-
-const isDev = true
-// const isDev = false
+}) 
 
 sequelize
 .authenticate()
