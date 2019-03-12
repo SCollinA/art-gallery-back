@@ -97,11 +97,12 @@ const resolvers = {
         },
         getArtworks: (obj, args, context, info) => {
             return Artwork.findAll({
-                where: args.input
+                where: args.input,
+                order: [['title', 'ASC']]
             })
         },
         getAllArtworks: (obj, args, context, info) => {
-            return Artwork.findAll()
+            return Artwork.findAll({order: [['title', 'ASC']]})
         }
     },
     // set
