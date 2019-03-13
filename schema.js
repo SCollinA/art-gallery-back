@@ -127,13 +127,11 @@ const resolvers = {
             return Artwork.create({ ...args.input })
         },
         updateArtwork: (obj, args, context, info) => {
-            // try { 
-                require('./utils').checkLoggedIn(context) 
-            // }
-            // catch (err) {
-            //     console.log(err, 'not logged in')
-            //     return Artwork.findByPk(args.id)
-            // }
+            require('./utils').checkLoggedIn(context) 
+            fs.rename(`../art-gallery-gatsby/src/images/artworks/${args.input.id}*`,
+                `../art-gallery-gatsby/src/images/artworks/${args.input.id}-${args.input.title}.jpeg`,
+                err => console.log(err)
+            )
             // check if image is less than 5 MB
             const image = args.input.image && args.input.image.length < 5000000 ? 
             args.input.image : ''
