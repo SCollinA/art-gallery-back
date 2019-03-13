@@ -138,7 +138,17 @@ const resolvers = {
                         `../art-gallery-gatsby/src/images/artworks/${args.input.id}-${args.input.title}.jpeg`,
                         err => console.log(err)
                     )
-                } catch (err) { console.log('could not rename image file', err) }
+                } catch (err) { 
+                    console.log('could not rename image file', err)
+                    try {
+                        fs.renameSync(`../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
+                            `../art-gallery-gatsby/src/images/artworks/${args.input.id}-${args.input.title}.jpeg`,
+                            err => console.log(err)
+                        )
+                    } catch (err) { 
+                        console.log('could not rename original image file name either', err)
+                    }
+                }
             })
             .then(() => {
                 try {
