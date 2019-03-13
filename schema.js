@@ -250,6 +250,9 @@ const resolvers = {
                         ${name}
                         ${message}
                         ${artwork}
+
+                        - reply directly to this e-mail to respond - 
+
                     `,
                     replyTo: contactEmail 
                 }, (error, info) => {
