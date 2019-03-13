@@ -130,7 +130,7 @@ const resolvers = {
             require('./utils').checkLoggedIn(context)
             // check if image is less than 5 MB
             const image = args.input.image && args.input.image.length < 5000000 ? 
-            args.input.image : ''
+                args.input.image : ''
             Artwork.findByPk(args.id)
             .then(artwork => {
                 try {
