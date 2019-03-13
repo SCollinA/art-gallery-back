@@ -127,58 +127,64 @@ const resolvers = {
             return Artwork.create({ ...args.input })
         },
         updateArtwork: (obj, args, context, info) => {
-            require('./utils').checkLoggedIn(context) 
-            fs.rename(`../art-gallery-gatsby/src/images/artworks/${args.input.id}*`,
-                `../art-gallery-gatsby/src/images/artworks/${args.input.id}-${args.input.title}.jpeg`,
-                err => console.log(err)
-            )
+            require('./utils').checkLoggedIn(context)
             // check if image is less than 5 MB
             const image = args.input.image && args.input.image.length < 5000000 ? 
             args.input.image : ''
-            // args.input.image && 
-            try {
-                if (!image) { // user submitted artwork without image
-                    fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
-                    err => {
-                        if (err) { console.log('artwork image file not deleted', err) }
-                        else { console.log('artwork image file deleted') }
-                    })
-                } else {
-                    // image && 
-                    // write file always in order to overwrite reused artwork IDs
-                    fs.writeFile(
-                        `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
-                        image,
-                        {
-                            encoding: 'base64',
-                            flag: 'w+',
-                        }, 
-                        err => {
-                            if (err) {
-                                fs.mkdir('../art-gallery-gatsby/src/images/artworks/',
-                                    err => {
-                                        if (err) { return console.log('could not mkdir for artwork', err) }
-                                        else {
-                                            fs.writeFile(
-                                                `../art-gallery-gatsby/src/images/artworks/${args.input.id}.jpeg`,
-                                                image,
-                                                {
-                                                    encoding: 'base64',
-                                                    flag: 'w+',
-                                                },
-                                                err => {
-                                                    if (err) { console.log('could not write artwork image to file', err) }
-                                                    else { console.log('artwork image written to file') }
-                                                }
-                                            )
-                                        }
-                                    }
-                                )  
-                            } 
-                        }
+            Artwork.findByPk(args.id)
+            .then(artwork => {
+                try {
+                    fs.renameSync(`../art-gallery-gatsby/src/images/artworks/${args.input.id}-${artwork.title}.jpeg`,
+                        `../art-gallery-gatsby/src/images/artworks/${args.input.id}-${args.input.title}.jpeg`,
+                        err => console.log(err)
                     )
-                }
-            } catch (err) { console.log('could not write artwork image to file', err) }
+                } catch (err) { console.log('could not rename image file', err) }
+            })
+            .then(() => {
+                try {
+                    if (!image) { // user submitted artwork without image
+                        fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.input.id}-${args.input.title}.jpeg`,
+                        err => {
+                            if (err) { console.log('artwork image file not deleted', err) }
+                            else { console.log('artwork image file deleted') }
+                        })
+                    } else {
+                        // image && 
+                        // write file always in order to overwrite reused artwork IDs
+                        fs.writeFile(
+                            `../art-gallery-gatsby/src/images/artworks/${args.input.id}-${args.input.title}.jpeg`,
+                            image,
+                            {
+                                encoding: 'base64',
+                                flag: 'w+',
+                            }, 
+                            err => {
+                                if (err) {
+                                    fs.mkdir('../art-gallery-gatsby/src/images/artworks/',
+                                        err => {
+                                            if (err) { return console.log('could not mkdir for artwork', err) }
+                                            else {
+                                                fs.writeFile(
+                                                    `../art-gallery-gatsby/src/images/artworks/${args.input.id}-${args.input.title}.jpeg`,
+                                                    image,
+                                                    {
+                                                        encoding: 'base64',
+                                                        flag: 'w+',
+                                                    },
+                                                    err => {
+                                                        if (err) { console.log('could not write artwork image to file', err) }
+                                                        else { console.log('artwork image written to file') }
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    )  
+                                } 
+                            }
+                        )
+                    }
+                } catch (err) { console.log('could not write artwork image to file', err) }
+            })
             return Artwork.update({ ...args.input, image }, { 
                 where: { id: args.id },
                 // returning: true
