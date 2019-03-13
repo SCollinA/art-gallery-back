@@ -5,7 +5,7 @@ const path = require('path')
 const isDev = true
 // const isDev = false
 
-const sequelize = new Sequelize('postgres:///art-gallery', {
+const sequelize = new Sequelize('postgres:///art_gallery', {
   operatorsAliases: Sequelize.Op,
   logging: false,
 }) 
