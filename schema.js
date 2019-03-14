@@ -121,6 +121,21 @@ const resolvers = {
         deleteGallery: (obj, args, context, info) => {
             require('./utils').checkLoggedIn(context)
             return Gallery.destroy({ where: { id: args.id } })
+            .then(() => {
+                Artwork.find({ where: { galleryId: args.id }})
+                .then(galleryArtworks => {
+                    galleryArtworks.forEach(galleryArtwork => {
+                        fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.id}.jpeg`,
+                            err => {
+                                if (err) { console.log('artwork image file not deleted', err) }
+                                else { console.log('artwork image file deleted') }
+                            })
+                    })
+                })
+                .then(() => {
+                    Artwork.destroy({ where: { galleryId: args.id }})
+                })
+            })
         },
         addArtwork: (obj, args, context, info) => {
             require('./utils').checkLoggedIn(context)
