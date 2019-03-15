@@ -38,7 +38,7 @@ const typeDefs = gql`
         getGalleries(input: GalleryInput!): [Gallery]!
         getAllGalleries: [Gallery]!
         "get a single artwork"
-        getArtwork(id: ID!): Artwork!
+        getArtwork(id: ID): Artwork
         getArtworks(input: ArtworkInput!): [Artwork]!
         getAllArtworks: [Artwork]!
     }
