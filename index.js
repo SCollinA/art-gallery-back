@@ -4,7 +4,16 @@ const { typeDefs, resolvers } = require('./schema')
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({ req }) => ({ authorization: req.get('Authorization') }),
+    context: ({ req, connection }) => {
+        if (connection) {
+            return connection.context
+        } else {
+            const authorization = req.headers.authorization || ''
+            console.log(authorization)
+            return { authorization }
+        }
+        // ({ authorization: req.get('Authorization') })
+    },
     cors: {
         origin: ['http://localhost:8000', // dev client port
                 'http://localhost:9000', // alternate dev client port
