@@ -1,4 +1,5 @@
-const { gql } = require('apollo-server')
+const { gql, PubSub } = require('apollo-server')
+const pubsub = new PubSub()
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
@@ -6,6 +7,7 @@ const nodemailer = require('nodemailer')
 const { google } = require('googleapis')
 const serviceKey = require('./service_key.json')
 const fs = require('fs')
+
 
 const Artwork = require('./Artwork')
 const Gallery = require('./Gallery')
@@ -55,6 +57,10 @@ const typeDefs = gql`
         contactArtist(name: String, contactEmail: String, message: String, artwork: String): Boolean
     }
 
+    type Subscription {
+        artworkImageChanged: Artwork
+    }
+
     type AuthPayload {
         token: String
     }
@@ -76,6 +82,8 @@ const typeDefs = gql`
         sold: Boolean
     }
 `
+
+const ARTWORK_IMAGE_CHANGED = `ARTWORK_IMAGE_CHANGED`
 
 // A map of functions which return data for the schema.
 const resolvers = {
@@ -210,6 +218,7 @@ const resolvers = {
                     }
                 } catch (err) { console.log('could not write artwork image to file', err) }
             })
+            pubsub.publish(ARTWORK_IMAGE_CHANGED, { artworkImageAdded: args });
             return Artwork.update({ ...args.input, image }, { 
                 where: { id: args.id },
                 // returning: true
@@ -294,6 +303,11 @@ const resolvers = {
         }
     },
     // subscribe
+    Subscription: {
+        artworkImageChanged: {
+            subscribe: () => pubsub.asyncIterator(['ARTWORK_IMAGE_CHANGED'])
+        }
+    }
 }
 
 module.exports = {
