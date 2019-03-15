@@ -8,8 +8,9 @@ const server = new ApolloServer({
         if (connection) {
             return connection.context
         } else {
-            const token = req.headers.authorization || ''
-            return { token }
+            const authorization = req.headers.authorization || ''
+            console.log(authorization)
+            return { authorization }
         }
         // ({ authorization: req.get('Authorization') })
     },
