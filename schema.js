@@ -218,6 +218,7 @@ const resolvers = {
                     }
                 } catch (err) { console.log('could not write artwork image to file', err) }
             })
+            .catch(console.log)
             pubsub.publish(ARTWORK_IMAGE_CHANGED, { artworkImageAdded: args });
             return Artwork.update({ ...args.input, image }, { 
                 where: { id: args.id },
