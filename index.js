@@ -8,12 +8,11 @@ const bodyparser = require('body-parser')
 
 const configurations = {
     // Note: You may need sudo to run on port 443
-    production: { ssl: true, port: 443, hostname: 'example.com' },
+    production: { ssl: true, port: 443, hostname: 'mkcrfineart.com' },
     development: { ssl: false, port: 4000, hostname: 'localhost' }
   }
   
 const environment = process.env.NODE_ENV || 'production'
-console.log(environment)
 const config = configurations[environment]
 
 const apollo = new ApolloServer({
