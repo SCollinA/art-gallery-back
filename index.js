@@ -1,9 +1,9 @@
-import express from 'express'
-import { ApolloServer } from 'apollo-server-express'
+const express = require('express')
+const { ApolloServer } = require('apollo-server-express')
 const { typeDefs, resolvers } = require('./schema')
-import fs from 'fs'
-import https from 'https'
-import http from 'http'
+const fs = require('fs')
+const https = require('https')
+const http = require('http')
 
 const configurations = {
     // Note: You may need sudo to run on port 443
@@ -12,12 +12,12 @@ const configurations = {
   }
   
 const environment = process.env.NODE_ENV || 'production'
+console.log(environment)
 const config = configurations[environment]
 
 const apollo = new ApolloServer({
     typeDefs,
     resolvers,
-    
     // code below would be used to authenticate subscription
     // subscriptions: {
     //     onConnect: (connectionParams, webSocket) => {
@@ -73,5 +73,9 @@ server.listen({
     path: '/graphql',
     // hostname: 'https://art-gallery.collinargo.com/graphql' 
     // hostname: 'http://localhost' 
-})
-.then(({ url }) => console.log(`🚀 Server ready at ${url}`))
+}, () => 
+console.log(
+    '🚀 Server ready at',
+    `http${config.ssl ? 's' : ''}://${config.hostname}:${config.port}${apollo.graphqlPath}`
+  )
+)
