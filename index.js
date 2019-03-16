@@ -4,6 +4,7 @@ const { typeDefs, resolvers } = require('./schema')
 const fs = require('fs')
 const https = require('https')
 const http = require('http')
+const bodyparser = require('body-parser')
 
 const configurations = {
     // Note: You may need sudo to run on port 443
@@ -46,7 +47,7 @@ const apollo = new ApolloServer({
     }
 })
 
-const app = express()
+const app = express().use(bodyparser.json({limit: '5mb'}))
 apollo.applyMiddleware({ app })
 
 // Create the HTTPS or HTTP server, per configuration
