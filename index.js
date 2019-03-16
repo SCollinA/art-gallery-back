@@ -56,8 +56,8 @@ if (config.ssl) {
   // are secured.
   server = https.createServer(
     {
-      key: fs.readFileSync(`./ssl/${environment}/server.key`),
-      cert: fs.readFileSync(`./ssl/${environment}/server.crt`)
+      key: fs.readFileSync(`/etc/letsencrypt/live/${environment}/privkey.pem`),
+      cert: fs.readFileSync(`/etc/letsencrypt/live/${environment}/fullchain.pem`)
     },
     app
   )
