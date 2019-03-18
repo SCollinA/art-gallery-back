@@ -9,7 +9,7 @@ require('dotenv').config()
 
 const configurations = {
     // Note: You may need sudo to run on port 443
-    production: { ssl: true, port: 443, hostname: 'mkcrfineart.com' },
+    production: { ssl: true, port: 4000, hostname: 'mkcrfineart.com' },
     development: { ssl: false, port: 4000, hostname: 'localhost' }
   }
   
