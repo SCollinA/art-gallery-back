@@ -16,9 +16,9 @@ sequelize
   console.log('Connection has been established successfully.')
   const imageDirectory = '../art-gallery-gatsby/src/images/artworks/'
   // sequelize.sync()
-  sequelize.sync({ force: isDev })
+  return sequelize.sync({ force: isDev })
   .then(() => {
-    isDev &&
+    return isDev &&
     fs.rmdir(imageDirectory,
     err => {
       if (err) { 
@@ -50,8 +50,9 @@ sequelize
       } else { console.log('removed all artworks') }
     })
   })
+  .catch(() => console.log('herro'))
 })
-.catch(err => {
+.catch(err => { 
   console.error('Unable to connect to the database:', err)
 })
 

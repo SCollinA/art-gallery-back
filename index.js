@@ -67,10 +67,10 @@ if (config.ssl) {
 
 // Add subscription support
 apollo.installSubscriptionHandlers(server)
-
-server.listen({ 
-    port: 4000, 
-    path: '/graphql',
+server.listen({
+  ...config,
+    // port: 4000, 
+    // path: '/graphql',
     // hostname: 'https://art-gallery.collinargo.com/graphql' 
     // hostname: 'http://localhost' 
 }, () => 
