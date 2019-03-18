@@ -5,6 +5,7 @@ const fs = require('fs')
 const https = require('https')
 const http = require('http')
 const bodyparser = require('body-parser')
+require('dotenv').config()
 
 const configurations = {
     // Note: You may need sudo to run on port 443
