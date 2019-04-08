@@ -24,6 +24,7 @@ const typeDefs = gql`
         image: String
         price: Int
         sold: Boolean
+        framed: Boolean
     }
     
     input GalleryInput {
@@ -80,9 +81,11 @@ const typeDefs = gql`
         image: String
         price: Int
         sold: Boolean
+        framed: Boolean
     }
 `
 
+// subscription name
 const ARTWORK_IMAGE_CHANGED = `ARTWORK_IMAGE_CHANGED`
 
 // A map of functions which return data for the schema.

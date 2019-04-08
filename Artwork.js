@@ -28,7 +28,11 @@ const Artwork = sequelize.define('artwork', {
     sold: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
-    }
+    },
+    framed: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+    },
 }, {
     timestamps: false
 })
