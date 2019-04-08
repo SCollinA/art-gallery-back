@@ -285,8 +285,7 @@ const resolvers = {
                 })
                 transporter.sendMail({
                     from: 'An Example <' + contactEmail + '>', // this is being overwritten by gmail
-                    to: 'collin.argo@gmail.com',
-                    // to: 'mkcrfineart@gmail.com', // client business e-mail
+                    to: process.env.CLIENT_EMAIL,
                     subject: 'art gallery contact',
                     text: `
                         ${name}
