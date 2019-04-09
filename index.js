@@ -1,4 +1,5 @@
 const express = require('express')
+const helmet = require('helmet')
 const { ApolloServer } = require('apollo-server-express')
 const { typeDefs, resolvers } = require('./schema')
 const fs = require('fs')
@@ -47,7 +48,24 @@ const apollo = new ApolloServer({
     }
 })
 
-const app = express().use(bodyparser.json({limit: '5mb'}))
+const rateLimiter = (req, res, next) => {
+    // receive request
+    // check bucket
+    // if notempty
+    // pop one
+    // set timeout
+    // after time
+    // push one
+    // call next
+    // if empty
+    // res.sendStatus(429)
+}
+
+const app = express()
+app.use(helmet())
+app.disable('x-powered-by')
+app.use(bodyparser.json({limit: '5mb'}))
+app.use(rateLimiter)
 apollo.applyMiddleware({ app })
 
 // Create the HTTPS or HTTP server, per configuration
