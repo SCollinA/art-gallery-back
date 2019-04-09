@@ -64,7 +64,7 @@ const rateLimiter = (req, res, next) => {
       console.log(error)
       // or make new one if not exists
       // expires after one day
-      return redisClient.setAsync(req.ip, 1, 'EX', 24 * 60 * 60 * 1000)
+      return redisClient.setAsync(req.ip, 0, 'EX', 24 * 60 * 60 * 1000)
       .then(() => redisClient.getAsync(req.ip))
     })
     .then(bucket => {
