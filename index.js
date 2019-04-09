@@ -54,42 +54,45 @@ let bucket = 5
 const rateLimiter = (req, res, next) => {
     // receive request
     // get bucket for ip from redis
-    let bucket
-    try {
-      redisClient.get(req.ip, (error, result) => {
-        if (error) {
-          console.log(error)
-          throw error;
-        }
-        console.log('GET result ->' + result)
-        bucket = result
-      })
-    } catch (error) {
+    redisClient.getAsync(req.ip)
+    .then(result => {
+      console.log('GET result ->' + result)
+      if (!result) { throw new Error('no bucket for ip')}
+      return result
+    })
+    .catch(error => {
+      console.log(error)
       // or make new one if not exists
-      redisClient.set(req.ip, 5, 24 * 60 * 60 * 1000, )
-    }
+      // expires after one day
+      return redisClient.setAsync(req.ip, 5, 'EX', 24 * 60 * 60 * 1000)
+      .then(() => redisClient.getAsync(req.ip))
+    })
+    .then(bucket => {
     // check bucket
     // if notempty
-    if (bucket > 0) {
-    // pop one
-      bucket--
-    // set timeout
-      setTimeout(() => {
-        // if bucket is not full
-        if (bucket < 5) {
-          // push one
-          bucket++
-        }
-      // after 1 sec
-      }, 1 * 1000)
-    // call next
-      console.log('req approved', bucket)
-      next()
+      if (bucket > 0) {
+        console.log('req approved', bucket)
+      // pop one
+        redisClient.decrAsync(req.ip)
+        .then(() => {
+        // set timeout
+          setTimeout(() => {
+            // if bucket is not full
+            if (bucket < 5) {
+              // push one
+              redisClient.incr(req.ip)
+            }
+          // after 1 sec
+          }, 1 * 1000)
+        // call next
+          next()
+        })
     } else {
       console.log('req denied')
       // if empty
       res.sendStatus(429)
     }
+  })
 }
 
 // setInterval(rateLimiter, 185)
