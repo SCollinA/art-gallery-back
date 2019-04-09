@@ -49,7 +49,7 @@ const apollo = new ApolloServer({
     }
 })
 
-let bucket = 5
+const RATE_LIMIT = 10
 
 const rateLimiter = (req, res, next) => {
     // receive request
@@ -64,23 +64,23 @@ const rateLimiter = (req, res, next) => {
       console.log(error)
       // or make new one if not exists
       // expires after one day
-      return redisClient.setAsync(req.ip, 5, 'EX', 24 * 60 * 60 * 1000)
+      return redisClient.setAsync(req.ip, 1, 'EX', 24 * 60 * 60 * 1000)
       .then(() => redisClient.getAsync(req.ip))
     })
     .then(bucket => {
     // check bucket
     // if notempty
-      if (bucket > 0) {
+      if (bucket < RATE_LIMIT) {
         console.log('req approved', bucket)
       // pop one
-        redisClient.decrAsync(req.ip)
+        redisClient.incrAsync(req.ip)
         .then(() => {
         // set timeout
           setTimeout(() => {
             // if bucket is not full
-            if (bucket < 5) {
+            if (bucket > 0) {
               // push one
-              redisClient.incr(req.ip)
+              redisClient.decr(req.ip)
             }
           // after 1 sec
           }, 1 * 1000)
