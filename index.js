@@ -1,5 +1,6 @@
 const express = require('express')
 const helmet = require('helmet')
+const redisClient = require('./redis/client')
 const { ApolloServer } = require('apollo-server-express')
 const { typeDefs, resolvers } = require('./schema')
 const fs = require('fs')
@@ -48,24 +49,56 @@ const apollo = new ApolloServer({
     }
 })
 
+let bucket = 5
+
 const rateLimiter = (req, res, next) => {
     // receive request
+    // get bucket for ip from redis
+    let bucket
+    try {
+      redisClient.get(req.ip, (error, result) => {
+        if (error) {
+          console.log(error)
+          throw error;
+        }
+        console.log('GET result ->' + result)
+        bucket = result
+      })
+    } catch (error) {
+      // or make new one if not exists
+      redisClient.set(req.ip, 5, 24 * 60 * 60 * 1000, )
+    }
     // check bucket
     // if notempty
+    if (bucket > 0) {
     // pop one
+      bucket--
     // set timeout
-    // after time
-    // push one
+      setTimeout(() => {
+        // if bucket is not full
+        if (bucket < 5) {
+          // push one
+          bucket++
+        }
+      // after 1 sec
+      }, 1 * 1000)
     // call next
-    // if empty
-    // res.sendStatus(429)
+      console.log('req approved', bucket)
+      next()
+    } else {
+      console.log('req denied')
+      // if empty
+      res.sendStatus(429)
+    }
 }
+
+// setInterval(rateLimiter, 185)
 
 const app = express()
 app.use(helmet())
 app.disable('x-powered-by')
 app.use(bodyparser.json({limit: '5mb'}))
-// app.use(rateLimiter)
+app.use(rateLimiter)
 apollo.applyMiddleware({ app })
 
 // Create the HTTPS or HTTP server, per configuration
