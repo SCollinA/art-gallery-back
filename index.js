@@ -49,7 +49,7 @@ const apollo = new ApolloServer({
     }
 })
 
-const RATE_LIMIT = 10
+const RATE_LIMIT = 20
 
 const rateLimiter = (req, res, next) => {
     // receive request
@@ -69,19 +69,20 @@ const rateLimiter = (req, res, next) => {
     })
     .then(bucket => {
     // check bucket
-    // if notempty
+    // if not full
       if (bucket < RATE_LIMIT) {
         console.log('req approved', bucket)
-      // pop one
+      // push one
         redisClient.incrAsync(req.ip)
         .then(() => {
         // set timeout
-          setTimeout(() => {
-            // if bucket is not full
+          const leakyBucket = setTimeout(() => {
+            // if bucket is not empty
             if (bucket > 0) {
-              // push one
+              // pop one
               redisClient.decr(req.ip)
             }
+            clearTimeout(leakyBucket)
           // after 1 sec
           }, 1 * 1000)
         // call next
@@ -94,8 +95,6 @@ const rateLimiter = (req, res, next) => {
     }
   })
 }
-
-// setInterval(rateLimiter, 185)
 
 const app = express()
 app.use(helmet())
