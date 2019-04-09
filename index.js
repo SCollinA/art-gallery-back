@@ -65,7 +65,7 @@ const app = express()
 app.use(helmet())
 app.disable('x-powered-by')
 app.use(bodyparser.json({limit: '5mb'}))
-app.use(rateLimiter)
+// app.use(rateLimiter)
 apollo.applyMiddleware({ app })
 
 // Create the HTTPS or HTTP server, per configuration
