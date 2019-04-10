@@ -83,21 +83,13 @@ const rateLimiter = (req, res, next) => {
     if (bucket < RATE_LIMIT) {
       console.log('req approved')
       // call next
-      // next()
+      next()
     } else {
       console.log('req denied')
-      // res.sendStatus(429)
+      res.sendStatus(429)
     }
   })
 }
-
-const hhm = setInterval(() => {
-  rateLimiter({ ip: 'hello' })
-}, 200)
-
-setTimeout(() => {
-  clearInterval(hhm)
-}, 10 * 1000)
 
 const app = express()
 app.use(helmet())
