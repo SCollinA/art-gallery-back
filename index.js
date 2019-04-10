@@ -1,6 +1,6 @@
 const express = require('express')
 const helmet = require('helmet')
-const redisClient = require('./redis/client')
+// const redisClient = require('./redis/client')
 const { ApolloServer } = require('apollo-server-express')
 const { typeDefs, resolvers } = require('./schema')
 const fs = require('fs')
