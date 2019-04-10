@@ -49,53 +49,53 @@ const apollo = new ApolloServer({
     }
 })
 
-const RATE_LIMIT = 20
+// const RATE_LIMIT = 20
 
-const rateLimiter = (req, res, next) => {
-  // receive request
-  // get bucket for ip from redis
-  // incr bucket, if no exists, will be created at 0
-  redisClient.incrAsync(req.ip)
-  .then(bucket => {
-    // set/update expiration date for key/value in redis
-    return redisClient.expireAsync(req.ip, 24 * 60 * 60 * 1000)
-    .then(() => bucket)
-  })
-  .then(bucket => {
-    console.log('INCR bucket -> ' + bucket, 'ip', req.ip)
-    // for each request, set leak timeout for bucket
-    const leak = setTimeout(() => {
-      // if bucket not empty
-      if (bucket > 0) {
-        // decrement bucket and clear timeout
-        redisClient.decr(req.ip, () => clearTimeout(leak))
-        // else if bucket is negative
-      } else if (bucket < 0) {
-        // reset to positive
-        redisClient.set(req.ip, 0)
-      }
-    }, 1 * 1000)
-    return bucket
-  })
-  .then(bucket => {
-  // check bucket
-  // if not full
-    if (bucket < RATE_LIMIT) {
-      console.log('req approved')
-      // call next
-      next()
-    } else {
-      console.log('req denied')
-      res.sendStatus(429)
-    }
-  })
-}
+// const rateLimiter = (req, res, next) => {
+//   // receive request
+//   // get bucket for ip from redis
+//   // incr bucket, if no exists, will be created at 0
+//   redisClient.incrAsync(req.ip)
+//   .then(bucket => {
+//     // set/update expiration date for key/value in redis
+//     return redisClient.expireAsync(req.ip, 24 * 60 * 60 * 1000)
+//     .then(() => bucket)
+//   })
+//   .then(bucket => {
+//     console.log('INCR bucket -> ' + bucket, 'ip', req.ip)
+//     // for each request, set leak timeout for bucket
+//     const leak = setTimeout(() => {
+//       // if bucket not empty
+//       if (bucket > 0) {
+//         // decrement bucket and clear timeout
+//         redisClient.decr(req.ip, () => clearTimeout(leak))
+//         // else if bucket is negative
+//       } else if (bucket < 0) {
+//         // reset to positive
+//         redisClient.set(req.ip, 0)
+//       }
+//     }, 1 * 1000)
+//     return bucket
+//   })
+//   .then(bucket => {
+//   // check bucket
+//   // if not full
+//     if (bucket < RATE_LIMIT) {
+//       console.log('req approved')
+//       // call next
+//       next()
+//     } else {
+//       console.log('req denied')
+//       res.sendStatus(429)
+//     }
+//   })
+// }
 
 const app = express()
 app.use(helmet())
 app.disable('x-powered-by')
 app.use(bodyparser.json({limit: '5mb'}))
-app.use(rateLimiter)
+// app.use(rateLimiter)
 apollo.applyMiddleware({ app })
 
 // Create the HTTPS or HTTP server, per configuration
