@@ -133,7 +133,7 @@ const resolvers = {
             require('./utils').checkLoggedIn(context)
             return Gallery.destroy({ where: { id: args.id } })
             .then(() => {
-                Artwork.find({ where: { galleryId: args.id }})
+                Artwork.findAll({ where: { galleryId: args.id }})
                 .then(galleryArtworks => {
                     galleryArtworks.forEach(galleryArtwork => {
                         fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.id}.jpeg`,
