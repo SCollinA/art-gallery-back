@@ -52,49 +52,52 @@ const apollo = new ApolloServer({
 const RATE_LIMIT = 20
 
 const rateLimiter = (req, res, next) => {
-    // receive request
-    // get bucket for ip from redis
-    redisClient.getAsync(req.ip)
-    .then(result => {
-      console.log('GET result ->' + result)
-      if (!result) { throw new Error('no bucket for ip')}
-      return result
-    })
-    .catch(error => {
-      console.log(error)
-      // or make new one if not exists
-      // expires after one day
-      return redisClient.setAsync(req.ip, 0, 'EX', 24 * 60 * 60 * 1000)
-      .then(() => redisClient.getAsync(req.ip))
-    })
-    .then(bucket => {
-    // check bucket
-    // if not full
-      if (bucket < RATE_LIMIT) {
-        console.log('req approved', bucket)
-      // push one
-        redisClient.incrAsync(req.ip)
-        .then(() => {
-        // set timeout
-          const leakyBucket = setTimeout(() => {
-            // if bucket is not empty
-            if (bucket > 0) {
-              // pop one
-              redisClient.decr(req.ip)
-            }
-            clearTimeout(leakyBucket)
-          // after 1 sec
-          }, 1 * 1000)
-        // call next
-          next()
-        })
+  // receive request
+  // get bucket for ip from redis
+  // incr bucket, if no exists, will be created at 0
+  redisClient.incrAsync(req.ip)
+  .then(bucket => {
+    // set/update expiration date for key/value in redis
+    return redisClient.expireAsync(req.ip, 24 * 60 * 60 * 1000)
+    .then(() => bucket)
+  })
+  .then(bucket => {
+    console.log('INCR bucket -> ' + bucket, 'ip', req.ip)
+    // for each request, set leak timeout for bucket
+    const leak = setTimeout(() => {
+      // if bucket not empty
+      if (bucket > 0) {
+        // decrement bucket and clear timeout
+        redisClient.decr(req.ip, () => clearTimeout(leak))
+        // else if bucket is negative
+      } else if (bucket < 0) {
+        // reset to positive
+        redisClient.set(req.ip, 0)
+      }
+    }, 1 * 1000)
+    return bucket
+  })
+  .then(bucket => {
+  // check bucket
+  // if not full
+    if (bucket < RATE_LIMIT) {
+      console.log('req approved')
+      // call next
+      // next()
     } else {
       console.log('req denied')
-      // if empty
-      res.sendStatus(429)
+      // res.sendStatus(429)
     }
   })
 }
+
+const hhm = setInterval(() => {
+  rateLimiter({ ip: 'hello' })
+}, 200)
+
+setTimeout(() => {
+  clearInterval(hhm)
+}, 10 * 1000)
 
 const app = express()
 app.use(helmet())
