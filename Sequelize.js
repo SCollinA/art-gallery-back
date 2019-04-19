@@ -6,7 +6,8 @@ const isDev = true
 // const isDev = false
 
 const sequelize = new Sequelize('postgres:///art_gallery', {
-  operatorsAliases: Sequelize.Op,
+  // operatorsAliases: Sequelize.Op,
+  // operatorsAliases: false,
   logging: false,
 }) 
 
