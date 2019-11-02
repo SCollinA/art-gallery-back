@@ -33,7 +33,7 @@ const Artwork = sequelize.define('artwork', {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
     },
-    recentlyUpdatedImage: {
+    recentlyupdatedimage: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
     }
