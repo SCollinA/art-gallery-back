@@ -25,12 +25,14 @@ const typeDefs = gql`
         price: Int
         sold: Boolean
         framed: Boolean
+        recentlyUpdatedImage: Boolean
     }
     
     input GalleryInput {
         id: ID
         name: String
         artworkIds: [ID]
+        artworks: [ArtworkInput]
     }
 
     type Query {
@@ -82,6 +84,7 @@ const typeDefs = gql`
         price: Int
         sold: Boolean
         framed: Boolean
+        recentlyUpdatedImage: Boolean
     }
 `
 
