@@ -181,13 +181,13 @@ const resolvers = {
             })
             .then(() => {
                 try {
-                    if (!image) { // user submitted artwork without image
-                        fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.input.id}-${args.input.title}.jpeg`,
-                        err => {
-                            if (err) { console.log('artwork image file not deleted', err) }
-                            else { console.log('artwork image file deleted') }
-                        })
-                    } else {
+                    if (image) { // user submitted artwork without image
+                        // fs.unlink(`../art-gallery-gatsby/src/images/artworks/${args.input.id}-${args.input.title}.jpeg`,
+                        // err => {
+                        //     if (err) { console.log('artwork image file not deleted', err) }
+                        //     else { console.log('artwork image file deleted') }
+                        // })
+                    // } else {
                         // image && 
                         // write file always in order to overwrite reused artwork IDs
                         fs.writeFile(
@@ -226,7 +226,10 @@ const resolvers = {
             })
             .catch(console.log)
             pubsub.publish(ARTWORK_IMAGE_CHANGED, { artworkImageAdded: args });
-            return Artwork.update({ ...args.input, image }, { 
+            if (image) {
+                args.input.image = image;
+            }
+            return Artwork.update({ ...args.input }, { 
                 where: { id: args.id },
                 // returning: true
             })
