@@ -25,7 +25,7 @@ const typeDefs = gql`
         price: Int
         sold: Boolean
         framed: Boolean
-        recentlyUpdatedImage: Boolean
+        recentlyupdatedimage: Boolean
     }
     
     input GalleryInput {
@@ -84,7 +84,7 @@ const typeDefs = gql`
         price: Int
         sold: Boolean
         framed: Boolean
-        recentlyUpdatedImage: Boolean
+        recentlyupdatedimage: Boolean
     }
 `
 
