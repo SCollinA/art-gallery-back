@@ -29,7 +29,7 @@
     "pg": "^7.8.0",
     "pg-hstore": "^2.3.2",
     "redis": "^2.8.0",
-    "sequelize": "^5.3.5",
+    "sequelize": "^5.15.1",
     "subscriptions-transport-ws": "^0.9.16"
   },
   "devDependencies": {
