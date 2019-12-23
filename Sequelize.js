@@ -2,8 +2,8 @@ const Sequelize = require('sequelize')
 const fs = require('fs')
 const path = require('path')
 
-const isDev = true
-// const isDev = false
+// const isDev = true
+const isDev = false
 
 const sequelize = new Sequelize('postgres:///art_gallery', {
   // operatorsAliases: Sequelize.Op,
