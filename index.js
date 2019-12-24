@@ -56,24 +56,25 @@ const rateLimiter = (req, res, next) => {
   // receive request
   // get bucket for ip from redis
   // incr bucket, if no exists, will be created at 0
-  redisClient.incrAsync(req.ip)
+  const reqIp = req.headers["x-forwarded-for"].split(/, /)[0];
+  redisClient.incrAsync(reqIp)
   .then(bucket => {
     // set/update expiration date for key/value in redis
-    return redisClient.expireAsync(req.ip, 24 * 60 * 60 * 1000)
+    return redisClient.expireAsync(reqIp, 24 * 60 * 60 * 1000)
     .then(() => bucket)
   })
   .then(bucket => {
-    console.log('INCR bucket -> ' + bucket, 'ip', req.ip)
+    console.log('INCR bucket -> ' + bucket, 'ip', reqIp)
     // for each request, set leak timeout for bucket
     const leak = setTimeout(() => {
       // if bucket not empty
       if (bucket > 0) {
         // decrement bucket and clear timeout
-        redisClient.decr(req.ip, () => clearTimeout(leak))
+        redisClient.decr(reqIp, () => clearTimeout(leak))
         // else if bucket is negative
       } else if (bucket < 0) {
         // reset to positive
-        redisClient.set(req.ip, 0)
+        redisClient.set(reqIp, 0)
       }
     }, 1 * 1000)
     return bucket
