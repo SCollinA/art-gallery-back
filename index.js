@@ -56,7 +56,10 @@ const rateLimiter = (req, res, next) => {
   // receive request
   // get bucket for ip from redis
   // incr bucket, if no exists, will be created at 0
-  const reqIp = req.headers["x-forwarded-for"].split(/, /)[0];
+  const reqHeaderIps = environment === "development" ?
+    req.ip :
+    req.headers["x-forwarded-for"];
+  const reqIp = reqHeaderIps.split(/, /)[0];
   redisClient.incrAsync(reqIp)
   .then(bucket => {
     // set/update expiration date for key/value in redis
